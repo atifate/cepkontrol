@@ -1,0 +1,23 @@
+[Unit]
+Description=AcikDestek encrypted relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ati
+WorkingDirectory=/home/ati/acikdestek
+ExecStart=/home/ati/acikdestek/venv/bin/python /home/ati/acikdestek/relay.py
+Environment=RELAY_HOST=0.0.0.0
+Environment=PORT=8765
+Environment=MAX_ROOMS=20
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+MemoryMax=512M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,48 @@
+CEPKONTROL — HIZLI BAŞLANGIÇ
+
+1. Kontrol edeceğin Windows bilgisayarda CepKontrol.exe dosyasını aç.
+2. Telefonu eşleştir / QR göster düğmesine bas.
+3. Telefonun kamerasını aç, QR kodu okut ve bağlantıyı aç.
+4. Telefon eşleşir ve doğrudan bağlanır. Bilgisayardan ayrıca onay gerekmez.
+
+SONRAKİ BAĞLANTILAR
+Telefonda aynı tarayıcıyla aşağıdaki adresi aç. Kaydın varsa otomatik bağlanır:
+https://acikdestek-sunucu.tailcb8d95.ts.net/
+Tarayıcı verilerini temizlersen veya farklı tarayıcı kullanırsan yeniden QR ile eşleştir.
+Telefona ekle düğmesine basarak ana ekranına CepKontrol simgesi ekle.
+Sonraki girişlerde simgeye dokun; son bağlandığın bilgisayar otomatik açılır.
+Bilgisayar veya internet geçici olarak erişilemezse sayfa açıkken kendiliğinden tekrar dener.
+Gizli sekme kullanma; telefon kaydı aynı tarayıcıda korunur.
+Bilgisayarda bu uygulama açık kalmalı; uygulamayı kapatırsan erişim durur.
+Uygulamayı yeniden açtığında kayıtlı telefon bağlantısı tekrar hazır olur.
+Windows kilit ekranı ve UAC güvenli masaüstü kontrol edilemez.
+
+Telefona uygulama kurman gerekmez. Android veya iPhone tarayıcısı yeterlidir.
+Tek oturumluk, bilgisayardan onay gerektiren bağlantı için şu adrese kod yapıştırabilirsin:
+https://acikdestek-sunucu.tailcb8d95.ts.net/
+
+Dokunmatik yüzey: herhangi bir yerde parmağını kaydır, imleç kaldığı yerden ilerlesin.
+Parmağını kaldırıp başka yere koyabilirsin; imleç dokunduğun noktaya atlamaz.
+Dokun: imlecin olduğu yerde tıkla. Yarım saniye basılı tutup taşı: sürükle. İki parmak: kaydır.
+Alttaki İmleç düğmesiyle istersen Doğrudan dokun moduna geç; tercihin kaydedilir.
+Yazı yaz: telefon klavyesinden metin gönder. Sağ tık ve özel tuşlar altta.
+Telefonu yatay çevirirsen bilgisayar ekranı daha büyük görünür.
+
+Bitirmek için: Bağlantıyı kes.
+Yalnızca görüntüleme için: Fare ve klavye kontrolü seçimini kapat.
+Uzak ekranın içine tıkla; fare ve klavyeyi kullan.
+F11: Tam ekran. Esc: Tam ekrandan çık ve basılı tuşları bırak.
+
+Kurulum veya Python gerekmez. Eşleşmiş telefon için tekrar onay gerekmez.
+Ayarlar'dan kayıtlı telefonu kaldırabilir veya doğrudan erişimi kapatabilirsin.
+Ana ekrandaki Bağlantıyı kes düğmesi doğrudan erişimi de durdurur.
+Yeniden açmak için Ayarlar'da kayıtlı telefon erişimini etkinleştir.
+
+İnternet sunucusu hazır ayarlıdır; ayrıca IP veya port yazman gerekmez.
+Sunucu: wss://acikdestek-sunucu.tailcb8d95.ts.net
+Karşı bilgisayarda Tailscale kurulumu gerekmez.
+Ubuntu sunucusu açık ve internete bağlı kalmalıdır.
+Bağlantı Tailscale Funnel üzerinden geçer; bu hizmetin bant genişliği sınırları vardır.
+
+İlk sürüm: ana monitör, ekran görüntüsü, fare ve klavye.
+Dosya aktarımı, ses, kilit ekranı ve Ctrl+Alt+Del desteklenmez.

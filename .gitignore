@@ -1,0 +1,12 @@
+__pycache__/
+build/
+*.spec
+.env
+.venv/
+dist/
+*.log
+*.dat
+*.tmp
+.env.*
+!.env.example
+node_modules/
