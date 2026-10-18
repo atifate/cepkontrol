@@ -22,8 +22,8 @@ Kalıcı kayıt aynı tarayıcı profiline aittir. Gizli sekme kullanmayın; sit
 Tarayıcı destekliyorsa kalıcı depolama talep edilir; işletim sistemi veya kullanıcı tarafından veri silinmesi engellenemez.
 Çevrimdışıyken yalnızca arayüz açılır; uzaktan kontrol için internet gerekir. Ekran görüntüleri ve erişim anahtarları servis çalışanı önbelleğine alınmaz.
 
-Uygulama bilgisayarda açık kalmalıdır. Uygulama kapanınca erişim durur; yeniden açılınca etkin eşleşmelerle bağlantı dinlemeye devam eder.
-Windows başlangıcına otomatik eklenmez. Windows kilidi, oturum açma ve UAC güvenli masaüstü desteklenmez.
+Pencereyi × ile kapatınca uygulama sistem tepsisinde çalışmaya devam eder ve kayıtlı telefon bağlanabilir. Tepsi simgesine çift tıklayarak pencereyi açabilir, sağ tık → **Tamamen çık** ile erişimi sonlandırabilirsiniz.
+**Ayarlar → Windows’a giriş yaptığımda arka planda başlat** seçeneğiyle otomatik başlangıcı açıp kapatabilirsiniz. Başlangıç mevcut Windows kullanıcısının oturum açmasına bağlıdır; Windows açılış ekranından önce çalışmaz. Windows kilidi, oturum açma ve UAC güvenli masaüstü desteklenmez.
 **Ayarlar** bölümünden kayıtlı telefonu kaldırabilir veya doğrudan erişimi kapatabilirsiniz.
 Ana ekrandaki **Bağlantıyı kes** düğmesi etkin doğrudan erişimi durdurur; Ayarlar'dan yeniden açılabilir.
 
@@ -84,7 +84,7 @@ Kısa bağlantı kodu sunucu adresini içermez; iki uygulamada aynı sunucu seç
 - İlk QR eşleştirme sırrı 10 dakika geçerlidir ve ilk kullanımda yeni bir telefon anahtarıyla değiştirilir. Eski QR kimlik bilgileri tekrar yetki vermez.
 - Telefon anahtarları bilgisayarda Windows CurrentUser DPAPI ile şifreli tutulur; telefonda aynı tarayıcının yerel kaydında saklanır. Tarayıcı verilerinin silinmesi yeniden eşleştirme gerektirir.
 - Eşleşmiş oturumlarda ekran ve kontrol için telefon anahtarı ile yeni sınamadan ayrı AES-GCM anahtarı türetilir. Önceki oturumdan kaydedilmiş kimlik doğrulama yanıtları kabul edilmez.
-- Windows başlangıcında otomatik veya gizli başlama bulunmaz. Uygulama açıkken bağlantıyı dinler; kapatılması erişimi durdurur.
+- Otomatik başlangıç mevcut kullanıcıya ait Windows Run kaydıyla yönetilir ve Ayarlar’dan kapatılabilir. Arka planda çalışırken sistem tepsisi simgesi görünür. **Tamamen çık** etkin erişimi durdurur; otomatik başlangıç tercihini ve telefon eşleşmesini silmez.
 - Birincil monitör paylaşılır; bağlantı hızına göre yaklaşık 2–6 kare/sn, en fazla 1280×800 JPEG. Yavaş bağlantılarda 1024×640 ve daha düşük JPEG kalitesi seçilir.
 - Güncel telefon istemcisi her görüntüyü gösterdikten sonra şifreli onay gönderir. Aynı anda yalnızca bir onaysız kare tutulur; eski telefon istemcileri daha düşük hızlı uyumlu aktarımı kullanır.
 - Şifreli canlılık yanıtları görüntü aktarımından bağımsız olarak bağlantıyı kontrol eder. Telefonda 45 saniyelik yanıt toleransı, sunucuda 60 saniyelik ping toleransı ve 30 saniyelik aktarım zaman aşımı kullanılır.
@@ -136,3 +136,5 @@ Sunucu kaynağını güncelledikten sonra hizmeti yeniden başlatın.
 CepKontrol, önceki AçıkDestek sürümlerinin eşleşme kaydını ve şifreleme protokolünü korur. Bu nedenle `%APPDATA%\AcikDestek` dizini, tarayıcı kayıt anahtarları ve kurulu `acikdestek.service` hizmet adı uyumluluk için değişmez.
 
 17 Ekim 2026 bağlantı doğrulaması: genel Funnel IP'sinden açılan telefon tarayıcısı ve PC'nin doğrudan özel aktarım yolu ile yoğun sentetik görüntü testi sekiz dakika sürdü; 270 kare gösterildi, yeniden bağlantı olmadı. Aynı test önceki HTTPS PC yolu ile yaklaşık bir dakikada kopmayı tekrarlamıştı. Bu ölçüm belirli test ağına aittir; farklı ağların davranışını garanti etmez.
+
+Windows masaüstü testi: `MOBILE_TRAY=1` ile PWA testi, pencere gizliyken telefon erişimini, tepsiden pencereyi geri açmayı ve tamamen çıkmayı da doğrular. Aynı Windows kullanıcısında uygulamanın ikinci kopyası yeni oturum oluşturmaz; mevcut pencereyi gösterir.

@@ -17,6 +17,7 @@ from wire import make_code, parse_code, validate_url
 from defaults import DEFAULT_SERVER
 from pairing import TrustedStore
 from diagnostics import configure_logging
+from desktop import Tray, startup_enabled, set_startup
 
 BG = '#0c1425'
 CARD = '#152238'
@@ -70,8 +71,11 @@ class App:
         self.phone_popup = None
         self.enrollment = None
         self.running = True
+        self.tray = None
+        self.instance = None
         self.retry_job = None
         self.start_job = None
+        self.hide_job = None
         try:
             self.trust = TrustedStore(CONFIG.parent / 'phones.dat')
         except Exception:
@@ -91,7 +95,7 @@ class App:
         self.viewer_control = tk.BooleanVar(value=True)
         self.build()
         self.poll_job = root.after(40, self.poll)
-        root.protocol('WM_DELETE_WINDOW', self.quit)
+        root.protocol('WM_DELETE_WINDOW', self.hide)
         if self.trust and self.trust.enabled:
             self.start_job = root.after(250, self.resume_host)
 
@@ -134,6 +138,31 @@ class App:
         footer.pack(fill='x', pady=(22, 0))
         label(footer, '', 10, ACCENT, textvariable=self.status, wraplength=610, justify='left').pack(side='left')
         button(footer, 'Bağlantıyı kes', self.disconnect).pack(side='right')
+
+    def enable_tray(self, instance, background=False):
+        self.instance = instance
+        try:
+            self.tray = Tray(Path(getattr(sys, '_MEIPASS', Path(__file__).parent)) / 'assets' / 'icon.ico')
+        except Exception:
+            self.tray = None
+            self.status.set('Sistem tepsisi açılamadı; pencereyi kapatmak uygulamadan çıkar.')
+        if background:
+            self.hide_job = self.root.after(500, self.hide)
+
+    def show(self):
+        self.root.deiconify()
+        self.root.state('normal')
+        self.root.lift()
+
+    def hide(self):
+        if self.tray and self.tray.ready.is_set():
+            self.root.withdraw()
+        elif self.tray and self.tray.thread.is_alive():
+            self.show()
+            self.status.set('Sistem tepsisi hazırlanıyor; bağlantı arka planda açık kalacak.')
+        else:
+            self.tray = None
+            self.quit()
 
     def emit(self, session, kind, payload):
         if kind == 'frame':
@@ -217,7 +246,16 @@ class App:
         popup = tk.Toplevel(self.root)
         popup.title('Sunucu ayarı')
         popup.configure(bg=CARD)
-        popup.geometry('590x550')
+        popup.geometry('590x620')
+        automatic = tk.BooleanVar(value=startup_enabled())
+        def toggle_startup():
+            try:
+                set_startup(automatic.get())
+            except OSError as exc:
+                automatic.set(startup_enabled())
+                messagebox.showerror('Windows başlangıcı',str(exc),parent=popup)
+        tk.Checkbutton(popup,text='Windows’a giriş yaptığımda arka planda başlat',variable=automatic,
+            command=toggle_startup,bg=CARD,fg=TEXT,selectcolor=BG,activebackground=CARD,activeforeground=TEXT).pack(anchor='w',padx=22,pady=(16,0))
         label(popup, 'Aktarım sunucusu', 17).pack(anchor='w', padx=22, pady=(20, 10))
         value = tk.StringVar(value=self.server.get())
         entry(popup, value).pack(fill='x', padx=22, ipady=10)
@@ -284,6 +322,18 @@ class App:
     def poll(self):
         if not self.running:
             return
+        commands = []
+        if self.instance:
+            commands.append(self.instance.command())
+        if self.tray:
+            while not self.tray.commands.empty():
+                commands.append(self.tray.commands.get())
+        for command in commands:
+            if command == 'quit':
+                self.quit()
+                return
+            if command == 'show':
+                self.show()
         for _ in range(30):
             try:
                 session, kind, payload = self.events.get_nowait()
@@ -510,6 +560,8 @@ class App:
         self.status.set('Bağlantı kapalı · Yeni bağlantı için yeni kod oluşturun')
 
     def quit(self):
+        if not self.running:
+            return
         self.running = False
         if self.poll_job:
             self.root.after_cancel(self.poll_job)
@@ -517,18 +569,36 @@ class App:
         if self.start_job:
             self.root.after_cancel(self.start_job)
             self.start_job = None
+        if self.hide_job:
+            self.root.after_cancel(self.hide_job)
+            self.hide_job = None
         self.disconnect(pause=False)
+        if self.tray:
+            self.tray.stop()
         self.root.destroy()
 
 
 if __name__ == '__main__':
+    from instance import Instance
+    instance = Instance('quit' if '--quit' in sys.argv else 'background' if '--background' in sys.argv else 'show')
+    if not instance.owner:
+        instance.close()
+        sys.exit(0)
     configure_logging()
     try:
         ctypes.windll.shcore.SetProcessDpiAwareness(2)
     except Exception:
         pass
     root = tk.Tk()
+    if '--background' in sys.argv:
+        root.withdraw()
     app = App(root)
+    if '--enable-startup' in sys.argv or startup_enabled():
+        set_startup(True)
+    app.enable_tray(instance, background='--background' in sys.argv)
     if '--pair-phone' in sys.argv:
         root.after(350, app.pair_phone)
-    root.mainloop()
+    try:
+        root.mainloop()
+    finally:
+        instance.close()

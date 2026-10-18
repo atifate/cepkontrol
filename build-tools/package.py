@@ -7,7 +7,7 @@ root = Path(__file__).resolve().parent.parent
 dist = root / 'dist'
 names = ['Pillow', 'mss', 'PyAutoGUI', 'cryptography', 'websocket-client', 'cffi',
          'pycparser', 'PyMsgBox', 'PyTweening', 'PyScreeze', 'PyGetWindow',
-         'PyRect', 'MouseInfo', 'pyperclip', 'pyinstaller', 'altgraph', 'qrcode', 'colorama']
+         'PyRect', 'MouseInfo', 'pyperclip', 'pyinstaller', 'altgraph', 'qrcode', 'colorama', 'pystray', 'six']
 notices = []
 for name in names:
     package = metadata.distribution(name)

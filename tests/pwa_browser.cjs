@@ -37,6 +37,11 @@ async function launch(){const args=process.env.MOBILE_TEST_PUBLIC_IP?['--host-re
   await page.locator('#desktop').waitFor({state:'visible'});
   await page.waitForFunction(()=>document.getElementById('screen').naturalWidth===1280);
   await until(()=>events.filter(event=>event.type==='video_ack').length>=3);
+  if(process.env.MOBILE_TRAY){
+    host.stdin.write('hide\n');await until(()=>events.some(event=>event.type==='background'));
+    await sleep(1200);assert(await page.locator('#desktop').isVisible());
+    host.stdin.write('show\n');await until(()=>events.some(event=>event.type==='shown'));
+  }
   const soakSeconds=Number(process.env.MOBILE_SOAK_SECONDS||0);
   if(soakSeconds){
     const accepted=events.filter(event=>event.type==='accepted').length;
@@ -85,6 +90,7 @@ async function launch(){const args=process.env.MOBILE_TEST_PUBLIC_IP?['--host-re
   await sleep(3500);
   assert.equal(events.filter(event=>event.type==='accepted').length,accepted);
   assert.equal(events.filter(event=>event.type==='consent').length,0);assert.equal(errors,'');
+  if(process.env.MOBILE_TRAY){host.stdin.write('quit_tray\n');await until(()=>host.exitCode===0);}
   console.log('PWA OK: manifest, icons, service worker, browser restart, persisted pairing, automatic last-computer login, offline shell and recovery');
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(async()=>{
   if(context)await context.close();for(const child of children)child.kill();

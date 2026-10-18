@@ -13,7 +13,9 @@ Telefona ekle düğmesine basarak ana ekranına CepKontrol simgesi ekle.
 Sonraki girişlerde simgeye dokun; son bağlandığın bilgisayar otomatik açılır.
 Bilgisayar veya internet geçici olarak erişilemezse sayfa açıkken kendiliğinden tekrar dener.
 Gizli sekme kullanma; telefon kaydı aynı tarayıcıda korunur.
-Bilgisayarda bu uygulama açık kalmalı; uygulamayı kapatırsan erişim durur.
+Pencereyi × ile kapatınca CepKontrol sistem tepsisinde çalışır; telefon erişimi sürer.
+Tepsi simgesine çift tıkla: pencereyi aç. Sağ tık → Tamamen çık: erişimi durdur.
+Ayarlar’dan Windows’a girişte arka planda otomatik başlamayı açıp kapatabilirsin.
 Uygulamayı yeniden açtığında kayıtlı telefon bağlantısı tekrar hazır olur.
 Windows kilit ekranı ve UAC güvenli masaüstü kontrol edilemez.
 

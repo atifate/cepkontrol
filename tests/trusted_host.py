@@ -59,6 +59,8 @@ first=True
 while True:
     root=tk.Tk()
     application=app_module.App(root)
+    if os.environ.get('MOBILE_TRAY'):
+        application.enable_tray(None)
     root.withdraw()
     application.server.set(os.environ.get('MOBILE_TEST_WS','ws://127.0.0.1:18766'))
     original_emit=application.emit
@@ -73,8 +75,12 @@ while True:
         report('restarted')
     reported=False
     restart=False
+    waiting_show=False
     def tick():
-        global reported,restart
+        global reported,restart,waiting_show
+        if waiting_show and root.state()=='normal':
+            waiting_show=False
+            report('shown')
         if application.consent:
             report('unexpected_consent')
         if application.phone_popup:
@@ -102,6 +108,20 @@ while True:
             application.trust.enable(True)
             application.resume_host()
             report('resumed')
+        if command=='hide':
+            if not application.tray.ready.is_set():
+                commands.put('hide')
+            else:
+                before=application.session
+                application.hide()
+                assert root.state()=='withdrawn'
+                assert application.session is before and before.approved.is_set()
+                report('background')
+        if command=='show':
+            waiting_show=True
+            application.tray.commands.put('show')
+        if command=='quit_tray':
+            application.tray.commands.put('quit')
         root.after(30,tick)
     root.after(30,tick)
     root.mainloop()
