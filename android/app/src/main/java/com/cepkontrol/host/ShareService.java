@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import okhttp3.ByteString;
+import okio.ByteString;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
