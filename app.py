@@ -128,7 +128,7 @@ class App:
         viewer = tk.Frame(cards, bg=CARD, padx=22, pady=22)
         viewer.grid(row=0, column=1, sticky='nsew', padx=(9, 0))
         label(viewer, '02  Bilgisayardan bağlan', 17).pack(anchor='w')
-        label(viewer, 'Karşı tarafın bağlantı kodunu yapıştır.\nOnaydan sonra ekranı görüntüle.', 11, MUTED, justify='left').pack(anchor='w', pady=(12, 18))
+        label(viewer, 'Windows veya Android cihazın kodunu yapıştır.\nEkranı görüntüle ve kontrol et.', 11, MUTED, justify='left').pack(anchor='w', pady=(12, 18))
         entry(viewer, self.remote_code).pack(fill='x', ipady=12)
         button(viewer, 'Kodu yapıştır', self.paste).pack(fill='x', pady=(8, 0))
         self.connect_button = button(viewer, 'Bağlan', self.connect, True)

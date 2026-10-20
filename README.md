@@ -2,11 +2,27 @@
 
 Telefonundan Windows bilgisayarını kontrol et. Bir kez QR ile eşleştir; sonraki açılışlarda kod veya bilgisayar onayı istemeden bağlan.
 
+Android telefonunu Windows bilgisayarından kontrol etmek için `android/` altında ayrı bir Android uygulaması da vardır. Bu yön için telefonun ekran paylaşımını her yeni oturumda başlatman gerekir.
+
 Ücretsiz, açık kaynak Windows uzaktan destek uygulaması. Ekran görüntüsü,
 fare, sürükleme, sağ tıklama, kaydırma, klavye ve Türkçe karakter desteği.
 AnyDesk ile bağlantısı bulunmayan bağımsız bir ilk sürümdür.
 
 ## Kullanım
+
+### Android telefonu bilgisayardan kontrol et
+
+1. GitHub Actions derlemesindeki `CepKontrol-Android-debug` APK'sını Android telefona yükle ve aç.
+2. Telefonda **Dokunma iznini aç** düğmesine basıp Android Erişilebilirlik ayarlarında **CepKontrol dokunma kontrolü** hizmetini etkinleştir. Bu izin olmadan ekranı görebilirsin, ancak dokunamazsın.
+3. Telefonda **Ekran paylaşımını başlat** düğmesine bas ve Android'in ekran kaydı/aktarımı iznini kabul et.
+4. Telefondaki `AD2...` kodunu Windows CepKontrol uygulamasının **Bilgisayardan bağlan** alanına girip **Bağlan** düğmesine bas.
+5. Windows penceresinden telefona tıkla, sürükle, kaydır veya odaktaki metin alanına yaz. Telefon üzerinden **Paylaşımı durdur** veya açık bildirim ile erişimi bitir.
+
+Android ekran paylaşımı, Android'in kendi izni nedeniyle her yeni paylaşım oturumunda telefondan başlatılmalıdır. Bu yönde kalıcı eşleşme ve telefon açılınca gözetimsiz bağlantı henüz yoktur. Telefon ve bilgisayar farklı ağlarda olabilir; ikisi de mevcut internet sunucusuna bağlanır. Bazı bankacılık ve DRM ekranları Android tarafından görüntü yakalamaya kapatılır. Döndürme sonrası görüntü/koordinat uyumu için paylaşımı yeniden başlatmak gerekebilir. Windows görüntüleyicisindeki sağ ve orta tık, tüm klavye kısayolları ve pano henüz Android'e uyarlanmadı.
+
+Android kaynak kodu `android/` içindedir. Android SDK 35 ve Gradle 8.7 ile `gradle -p android :app:assembleDebug` komutu APK üretir. `.github/workflows/android.yml` aynı derlemeyi GitHub Actions üzerinde yapar. GitHub Actions debug APK'sı deneme kurulumudur; farklı bir derleme anahtarıyla sonraki sürüme doğrudan yükseltme yapılamayabilir.
+
+### Windows bilgisayarını telefondan kontrol et
 
 1. Kontrol edilecek Windows bilgisayarda **CepKontrol.exe** dosyasını açın.
 2. **Telefonu eşleştir / QR göster** düğmesine basın.
