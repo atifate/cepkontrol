@@ -54,7 +54,7 @@ public final class ControlService extends AccessibilityService {
                         try {
                             AccessibilityNodeInfo focused = node.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
                             if (focused != null) {
-                                try { if (android.os.Build.VERSION.SDK_INT >= 30) focused.performAction(AccessibilityNodeInfo.ACTION_IME_ENTER); }
+                                try { if (android.os.Build.VERSION.SDK_INT >= 30) focused.performAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_IME_ENTER.getId()); }
                                 finally { focused.recycle(); }
                             }
                         } finally { node.recycle(); }
