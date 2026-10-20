@@ -36,6 +36,7 @@ public final class ShareService extends Service {
     static final String START = "com.cepkontrol.host.START";
     static final String STOP = "com.cepkontrol.host.STOP";
     static volatile boolean sharing;
+    static volatile boolean connected;
     static volatile String activeCode = "";
     static volatile String status = "Hazır";
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -107,6 +108,7 @@ public final class ShareService extends Service {
     private void connect() {
         if (stopped) return;
         approved = false;
+        connected = false;
         pendingFrame = 0;
         session = null;
         status = "Sunucuya bağlanıyor";
@@ -127,6 +129,7 @@ public final class ShareService extends Service {
         if (ws != socket || stopped) return;
         socket = null;
         approved = false;
+        connected = false;
         session = null;
         status = "Bağlantı kesildi · yeniden deneniyor";
         worker.schedule(this::connect, 2, TimeUnit.SECONDS);
@@ -140,6 +143,7 @@ public final class ShareService extends Service {
             JSONObject response = new JSONObject().put("type", "accepted").put("session", session);
             ws.send(ByteString.of(protocol.pack(response)));
             approved = true;
+            connected = true;
             status = "Bilgisayar bağlı · ekran paylaşılıyor";
         } else if ("frame_ack".equals(kind) && approved && session.equals(msg.optString("session"))) {
             if (msg.optLong("frame_id", -1) == pendingFrame) pendingFrame = 0;
@@ -161,7 +165,9 @@ public final class ShareService extends Service {
             if (!Float.isFinite(x) || !Float.isFinite(y) || x < 0 || x > 1 || y < 0 || y > 1) return;
             if ("keydown".equals(action)) {
                 String key = event.optString("key");
-                if ("esc".equals(key) || "backspace".equals(key)) action = "back";
+                if ("esc".equals(key)) action = "back";
+                else if ("backspace".equals(key)) action = "backspace";
+                else if ("enter".equals(key)) action = "enter";
                 else if ("winleft".equals(key)) action = "home";
                 else return;
             } else if ("keyup".equals(action)) return;
@@ -198,10 +204,9 @@ public final class ShareService extends Service {
             long id = ++frameId;
             JSONObject frame = new JSONObject().put("type", "frame").put("session", session)
                 .put("frame_id", id).put("jpeg", Protocol.jpegBase64(output.toByteArray()));
-            if (socket.send(ByteString.of(protocol.pack(frame)))) {
-                pendingFrame = id;
-                lastFrameSent = now;
-            }
+            pendingFrame = id;
+            lastFrameSent = now;
+            if (!socket.send(ByteString.of(protocol.pack(frame)))) pendingFrame = 0;
         } catch (Exception ignored) {
             // Rotation and app-protected surfaces may temporarily have no frame.
         } finally {
@@ -213,6 +218,7 @@ public final class ShareService extends Service {
     @Override public void onDestroy() {
         stopped = true;
         sharing = false;
+        connected = false;
         activeCode = "";
         status = "Paylaşım durdu";
         if (socket != null) socket.close(1000, "Phone stopped sharing");

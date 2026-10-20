@@ -14,6 +14,7 @@ AnyDesk ile bağlantısı bulunmayan bağımsız bir ilk sürümdür.
 
 1. GitHub Actions derlemesindeki `CepKontrol-Android-debug` APK'sını Android telefona yükle ve aç.
 2. Telefonda **Dokunma iznini aç** düğmesine basıp Android Erişilebilirlik ayarlarında **CepKontrol dokunma kontrolü** hizmetini etkinleştir. Bu izin olmadan ekranı görebilirsin, ancak dokunamazsın.
+   Android 13+ sürümünde dışarıdan yüklenen APK için bu seçenek kilitliyse **Ayarlar → Uygulamalar → CepKontrol → ⋮ → Kısıtlı ayarlara izin ver** yolunu açıp yeniden dene. Bu izin, telefon ekranını okuma ve kontrol etme yetkisi verir; yalnızca kendi kurduğun APK'ya ver.
 3. Telefonda **Ekran paylaşımını başlat** düğmesine bas ve Android'in ekran kaydı/aktarımı iznini kabul et.
 4. Telefondaki `AD2...` kodunu Windows CepKontrol uygulamasının **Bilgisayardan bağlan** alanına girip **Bağlan** düğmesine bas.
 5. Windows penceresinden telefona tıkla, sürükle, kaydır veya odaktaki metin alanına yaz. Telefon üzerinden **Paylaşımı durdur** veya açık bildirim ile erişimi bitir.

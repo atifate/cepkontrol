@@ -22,7 +22,7 @@ public final class ControlService extends AccessibilityService {
 
     void input(String kind, float x, float y, int steps, String value) {
         main.post(() -> {
-            if (active != this || !ShareService.sharing) return;
+            if (active != this || !ShareService.sharing || !ShareService.connected) return;
             switch (kind) {
                 case "down":
                     drag.clear();
@@ -47,6 +47,19 @@ public final class ControlService extends AccessibilityService {
                     }
                     break;
                 case "text": appendText(value); break;
+                case "backspace": deleteText(); break;
+                case "enter":
+                    AccessibilityNodeInfo node = getRootInActiveWindow();
+                    if (node != null) {
+                        try {
+                            AccessibilityNodeInfo focused = node.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+                            if (focused != null) {
+                                try { if (android.os.Build.VERSION.SDK_INT >= 30) focused.performAction(AccessibilityNodeInfo.ACTION_IME_ENTER); }
+                                finally { focused.recycle(); }
+                            }
+                        } finally { node.recycle(); }
+                    }
+                    break;
                 case "back": performGlobalAction(GLOBAL_ACTION_BACK); break;
                 case "home": performGlobalAction(GLOBAL_ACTION_HOME); break;
                 case "recents": performGlobalAction(GLOBAL_ACTION_RECENTS); break;
@@ -78,6 +91,23 @@ public final class ControlService extends AccessibilityService {
                 Bundle args = new Bundle();
                 args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
                     (before == null ? "" : before.toString()) + value);
+                focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
+            } finally { focused.recycle(); }
+        } finally { root.recycle(); }
+    }
+
+    private void deleteText() {
+        AccessibilityNodeInfo root = getRootInActiveWindow();
+        if (root == null) return;
+        try {
+            AccessibilityNodeInfo focused = root.findFocus(AccessibilityNodeInfo.FOCUS_INPUT);
+            if (focused == null || !focused.isEditable()) return;
+            try {
+                CharSequence before = focused.getText();
+                if (before == null || before.length() == 0) return;
+                Bundle args = new Bundle();
+                args.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+                    before.subSequence(0, before.length() - 1));
                 focused.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, args);
             } finally { focused.recycle(); }
         } finally { root.recycle(); }
