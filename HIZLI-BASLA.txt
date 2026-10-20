@@ -1,5 +1,7 @@
 CEPKONTROL — HIZLI BAŞLANGIÇ
 
+WINDOWS BİLGİSAYARINI TELEFONDAN KONTROL ET
+
 1. Kontrol edeceğin Windows bilgisayarda CepKontrol.exe dosyasını aç.
 2. Telefonu eşleştir / QR göster düğmesine bas.
 3. Telefonun kamerasını aç, QR kodu okut ve bağlantıyı aç.
@@ -45,6 +47,14 @@ Sunucu: wss://acikdestek-sunucu.tailcb8d95.ts.net
 Karşı bilgisayarda Tailscale kurulumu gerekmez.
 Ubuntu sunucusu açık ve internete bağlı kalmalıdır.
 Bağlantı Tailscale Funnel üzerinden geçer; bu hizmetin bant genişliği sınırları vardır.
+
+ANDROID TELEFONUNU WINDOWS BİLGİSAYARDAN KONTROL ET
+CepKontrol-Android.apk dosyasını telefona yükle ve aç.
+Dokunma iznini aç: Android Erişilebilirlik ayarlarında CepKontrol dokunma kontrolünü etkinleştir.
+Ekran paylaşımını başlat ve Android'in sistem iznini kabul et.
+Telefondaki AD2... kodunu Windows uygulamasının Bilgisayardan bağlan alanına gir.
+Android her yeni ekran paylaşımı için telefonda yeniden izin ister.
+Telefondaki Paylaşımı durdur düğmesi veya açık bildirim erişimi keser.
 
 İlk sürüm: ana monitör, ekran görüntüsü, fare ve klavye.
 Dosya aktarımı, ses, kilit ekranı ve Ctrl+Alt+Del desteklenmez.
