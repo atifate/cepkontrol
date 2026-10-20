@@ -11,12 +11,14 @@ import tempfile
 import secrets
 from urllib.parse import urlsplit
 from unittest.mock import patch
+from unittest.mock import MagicMock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from PIL import Image
 from wire import Cipher, make_code, parse_code, validate_url
 from transport import Session
 from pairing import TrustedStore, phone_proof, session_key
+from app import App
 
 
 def wait_for(events, kind, timeout=10):
@@ -56,6 +58,21 @@ class ProtocolTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_url('wss://user:password@example.com')
         self.assertEqual(validate_url('ws://100.95.233.35:8765'), 'ws://100.95.233.35:8765')
+
+    def test_viewer_replaces_idle_trusted_phone_listener(self):
+        app = App.__new__(App)
+        app.remote_code = MagicMock(get=lambda: 'AD2.123456789.' + 'A' * 26)
+        app.server = MagicMock(get=lambda: 'wss://example.com')
+        app.session = MagicMock(role='host', trusted_store=object())
+        app.session.approved.is_set.return_value = False
+        app.viewer_return_to_host = False
+        app.disconnect = MagicMock()
+        app.begin = MagicMock(return_value=True)
+        with patch('app.parse_code', return_value={'url': 'wss://example.com', 'room': '123456789', 'key': '00' * 32}):
+            app.connect()
+        self.assertTrue(app.viewer_return_to_host)
+        app.disconnect.assert_called_once_with(pause=False)
+        app.begin.assert_called_once_with({'url': 'wss://example.com', 'room': '123456789', 'key': '00' * 32}, 'viewer')
 
 
 class RelayTests(unittest.TestCase):

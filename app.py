@@ -76,6 +76,7 @@ class App:
         self.retry_job = None
         self.start_job = None
         self.hide_job = None
+        self.viewer_return_to_host = False
         try:
             self.trust = TrustedStore(CONFIG.parent / 'phones.dat')
         except Exception:
@@ -180,6 +181,10 @@ class App:
         self.session = session
         self.share_button.configure(state='disabled')
         self.connect_button.configure(state='disabled')
+        if persistent:
+            # A trusted-phone listener is idle most of the time. It must not
+            # prevent this PC from using the viewer side of the application.
+            self.connect_button.configure(state='normal')
         self.status.set('Sunucuya bağlanılıyor…')
         session.start()
         return True
@@ -226,7 +231,17 @@ class App:
 
     def connect(self):
         try:
-            self.begin(parse_code(self.remote_code.get().strip(), self.server.get().strip()), 'viewer')
+            data = parse_code(self.remote_code.get().strip(), self.server.get().strip())
+            if self.session:
+                waiting_for_phone = (self.session.role == 'host' and
+                                     self.session.trusted_store and
+                                     not self.session.approved.is_set())
+                if not waiting_for_phone:
+                    messagebox.showinfo('Açık oturum', 'Önce mevcut bağlantıyı kesin.')
+                    return
+                self.viewer_return_to_host = True
+                self.disconnect(pause=False)
+            self.begin(data, 'viewer')
         except Exception as exc:
             messagebox.showerror('Bağlantı kodu', str(exc))
 
@@ -355,6 +370,8 @@ class App:
                 self.ask_consent(session, payload)
             elif kind == 'accepted':
                 self.status.set('Bağlı · ' + ('Ekranınız paylaşılıyor' if session.role == 'host' else 'Uzak ekran açık'))
+                if session.role == 'host':
+                    self.connect_button.configure(state='disabled')
                 if session.role == 'host' and self.phone_popup:
                     self.phone_popup.destroy()
                     self.phone_popup = None
@@ -366,7 +383,11 @@ class App:
                 if not session.trusted_store:
                     messagebox.showerror('Bağlantı bilgisi', payload, parent=self.root)
             elif kind == 'ended':
-                resume = bool(session.trusted_store and self.trust.enabled and self.running)
+                resume = bool((session.trusted_store or
+                               (session.role == 'viewer' and self.viewer_return_to_host)) and
+                              self.trust and self.trust.enabled and self.running)
+                if session.role == 'viewer':
+                    self.viewer_return_to_host = False
                 self.cleanup()
                 if resume:
                     self.status.set('Telefon bağlantısı bekleniyor · Sunucuya yeniden bağlanılıyor…')
@@ -533,13 +554,20 @@ class App:
         if self.retry_job:
             self.root.after_cancel(self.retry_job)
             self.retry_job = None
-        if pause and self.trust and self.trust.enabled:
+        was_viewer = bool(self.session and self.session.role == 'viewer')
+        resume_host = bool(was_viewer and self.viewer_return_to_host and
+                           self.trust and self.trust.enabled and self.running)
+        if pause and self.session and self.session.role == 'host' and self.session.trusted_store and self.trust and self.trust.enabled:
             self.trust.enable(False)
         if self.session:
             self.session.closed.set()
             self.session.release_inputs()
             threading.Thread(target=self.session.close, daemon=True).start()
         self.cleanup()
+        if resume_host:
+            self.viewer_return_to_host = False
+            self.status.set('Telefon bağlantısı bekleniyor · Sunucuya yeniden bağlanılıyor…')
+            self.retry_job = self.root.after(500, self.resume_host)
 
     def cleanup(self):
         self.session = None
